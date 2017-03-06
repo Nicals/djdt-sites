@@ -1,0 +1,129 @@
+<h4>Current site</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Name</th>
+      <th>Domain</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="djDebugOdd">
+      <td>{{ current.pk }}</td>
+      <td>{{ current.name }}</td>
+      <td>{{ current.domain }}</td>
+      <td>
+        <button data-role="djdt-site-default">
+          Switch to default site
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h4>Switch site</h4>
+
+<form data-role="djdt-site-switch-form">
+  <p>
+    <input type="text" data-role="djdt-filter-domain" placeholder="Filter" />
+  </p>
+</form>
+
+
+<table>
+  <thead>
+    <tr>
+      <th>pk</th>
+      <th>domain</th>
+      <th>name</th>
+      <th>{# toolbar #}</th>
+    </tr>
+  </thead>
+  <tbody data-role="djdt-sites-table">
+    {% for site in sites %}
+    <tr data-pk="{{ site.site.pk }}" data-domain="{{ site.site.domain }}" data-name="{{ site.site.name }}" {% if site.is_current %}style="background-color: #ffc;"{% else %}class="{% cycle "djDebugOdd" "djDebugEven" %}"{% endif %}>
+      <td>{{ site.site.pk }}</td>
+      <td>{{ site.site.domain }}</td>
+      <td>{{ site.site.name }}</td>
+      <td>
+        {% if site.is_current %}
+        {% else %}
+          <button data-role="djdt-site-switch" data-switch-id="{{ site.site.pk }}">
+            Select
+          </button>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+var switches = document.querySelectorAll('[data-role="djdt-site-switch"]');
+var defaultSwitch = document.querySelector('[data-role="djdt-site-default"]');
+var filterInput = document.querySelector('[data-role="djdt-filter-domain"]');
+var siteBody = document.querySelector('[data-role="djdt-sites-table"]');
+var dataSwitchForm = document.querySelector('[data-role="djdt-site-switch-form"]');
+
+function switchToSite(site_id) {
+  if (site_id !== null)
+  {
+    djdt.cookie.set("djdt_site", site_id, {path: "/"});
+  }
+  else
+  {
+    djdt.cookie.set("djdt_site", site_id, {expires: 0, path: "/"});
+  }
+
+  djdt.cookie.set("djdt", "hide", {path: "/", expires: 10});
+  djdt.hide_toolbar();
+  location.reload();
+}
+
+for (var i = 0 ; i < switches.length ; i++) {
+  switches[i].addEventListener('click', function(e) {
+    var site_id = e.target.getAttribute('data-switch-id');
+    switchToSite(site_id);
+  });
+}
+
+defaultSwitch.addEventListener('click', function(e) {
+  switchToSite(null);
+});
+
+filterInput.addEventListener('keyup', function(e) {
+  var term = e.target.value.trim().toLowerCase() || null;
+
+  [].forEach.call(siteBody.querySelectorAll('tr'), function(tr) {
+    var filtered = false;
+
+    if (term !== null) {
+      var domain = tr.dataset.domain.toLowerCase();
+      var name = tr.dataset.name.toLowerCase();
+      filtered = !(domain.startsWith(term) || name.startsWith(term));
+    }
+
+    tr.style.display = filtered ? 'none' : '';
+  });
+});
+
+dataSwitchForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  var row = siteBody.querySelectorAll('tr');
+
+  for (var i=0 ; i<row.length ; i++)
+  {
+    var tr = row[i];
+    if (tr.style.display == 'none')
+    {
+      continue;
+    }
+
+    switchToSite(tr.dataset.pk);
+    break;
+  }
+});
+
+</script>
