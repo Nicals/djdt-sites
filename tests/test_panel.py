@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.test.client import RequestFactory
 import pytest
 
-from djdt_sites import SitesPanel
+from djdt_sites.panel import SitesPanel
 
 
 @pytest.mark.django_db

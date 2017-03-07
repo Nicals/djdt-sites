@@ -2,7 +2,7 @@ from django.contrib.sites.models import Site
 from django.test.client import RequestFactory
 import pytest
 
-from djdt_sites import switch_site_middleware
+from djdt_sites.middleware import switch_site_middleware
 
 
 def get_response(request):
