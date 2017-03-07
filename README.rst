@@ -4,6 +4,10 @@ DjDT Sites panel
 ``DjDT Sites`` adds a ``Sites`` panel that lists all registered sites and allows
 to easily switch from one to another during development.
 
+.. image:: https://raw.githubusercontent.com/Nicals/djdt-sites/master/screenshot.png
+   :width: 934
+   :height: 341
+
 Install
 -------
 
